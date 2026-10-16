@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spelling Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sea-deep: #06243f; --sea: #0d4f7a; --sea-light: #1c86b8; --foam: #bfe9ff;
+    --gold: #e9b949; --gold-dark: #a87a1c; --marble: #e8f6ff; --bronze: #0d4f7a;
+    --btn: #2a9df4; --btn-light: #6cc6ff; --btn-dark: #0b5c99;
+    --good: #2fbf71; --bad: #e0503a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 60px; min-height: 100vh; color: #2b2116;
+    font-family: 'Cinzel', Georgia, serif;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(191,233,255,.25), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(233,185,73,.15), transparent 45%),
+      linear-gradient(180deg, var(--sea-deep), var(--sea) 60%, var(--sea-light));
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+  .waves { position: fixed; left: 0; right: 0; bottom: 0; height: 90px; pointer-events: none; z-index: 0; opacity: .5;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30'%3E%3Cpath d='M0 15 Q15 0 30 15 T60 15 T90 15 T120 15 V30 H0Z' fill='%23bfe9ff' fill-opacity='.35'/%3E%3C/svg%3E") repeat-x;
+    background-size: 240px 90px; animation: sea 8s linear infinite; }
+  @keyframes sea { to { background-position: 240px 0; } }
+
+  .title { text-align: center; margin: 0 auto 18px; position: relative; z-index: 1; }
+  .title h1 { font-family: 'Cinzel Decorative', 'Cinzel', serif; font-size: clamp(28px, 6vw, 46px); margin: 0;
+    color: #9fe0ff; text-shadow: 0 2px 0 var(--btn-dark), 0 0 20px rgba(108,198,255,.8); letter-spacing: 2px; }
+  .title .sub { color: var(--foam); font-size: 15px; letter-spacing: 3px; margin-top: 4px; }
+  .trident { font-size: 44px; display: inline-block; animation: float 3s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(191,233,255,.8)); }
+  @keyframes float { 50% { transform: translateY(-6px) rotate(-4deg); } }
+
+  .card {
+    position: relative; z-index: 1; max-width: 580px; margin: 0 auto 22px; padding: 30px 26px 24px;
+    background: linear-gradient(180deg, #f7fcff, var(--marble));
+    border-radius: 18px; border: 3px solid var(--btn);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 6px var(--marble), inset 0 0 0 8px rgba(233,185,73,.6);
+  }
+  .card::before, .card::after { content: ''; position: absolute; left: 18px; right: 18px; height: 12px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Cpath d='M0 11 H20 V1 H4 V7 H14 V4 H9' fill='none' stroke='%23a87a1c' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+    background-size: 24px 12px; opacity: .8; }
+  .card::before { top: 10px; } .card::after { bottom: 10px; }
+  .card h2 { font-family: 'Cinzel Decorative', serif; text-align: center; color: var(--bronze); margin: 4px 0 14px; }
+
+  .hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-weight: 700; color: var(--bronze); }
+  .pill { background: var(--sea-deep); color: var(--gold); padding: 6px 14px; border-radius: 999px; font-size: 15px; box-shadow: inset 0 0 0 2px var(--gold-dark); }
+
+  .hud { flex-wrap: wrap; gap: 8px; }
+  .bar { position: relative; height: 26px; margin-bottom: 8px; border-radius: 999px; overflow: hidden;
+    background: rgba(13,79,122,.15); box-shadow: inset 0 0 0 2px var(--btn); }
+  .bar-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--btn), var(--btn-light)); transition: width .5s ease; }
+  .bar-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--sea-deep); }
+  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 14px 0; }
+  button { font-family: 'Cinzel', serif; font-weight: 700; font-size: 17px; padding: 12px 18px; border: none; border-radius: 12px; cursor: pointer;
+    color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.3); background: linear-gradient(180deg, var(--btn-light), var(--btn)); box-shadow: 0 4px 0 var(--btn-dark), 0 6px 12px rgba(0,0,0,.2);
+    transition: transform .08s, box-shadow .08s; }
+  button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--btn-dark); }
+  button.secondary { background: linear-gradient(180deg, var(--sea), var(--sea-deep)); box-shadow: 0 4px 0 #031526, 0 6px 12px rgba(0,0,0,.2); }
+  button.big { font-size: 20px; padding: 16px 26px; }
+  button.mic.on { background: linear-gradient(180deg, #ff8a6b, var(--bad)); box-shadow: 0 4px 0 #8f2a1c; animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { filter: brightness(1.2); } }
+  button:disabled { opacity: .45; cursor: default; }
+
+  input { width: 100%; font-family: 'Cinzel', serif; font-weight: 700; font-size: 30px; padding: 14px; text-align: center; letter-spacing: 6px;
+    color: var(--sea-deep); background: #fffdf7; border: 3px solid var(--sea-light); border-radius: 14px; outline: none; text-transform: lowercase; }
+  input::placeholder { font-size: 18px; letter-spacing: 2px; }
+  input:focus { border-color: var(--btn); box-shadow: 0 0 0 4px rgba(42,157,244,.35); }
+
+  #result { text-align: center; font-size: 22px; min-height: 64px; margin-top: 10px; }
+  #result .big { font-family: 'Cinzel Decorative', serif; font-size: 26px; margin-bottom: 4px; }
+  .pop { animation: pop .4s ease-out; }
+  @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+  .shake { animation: shake .4s; }
+  @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .hebrew { display: inline-block; margin-top: 8px; padding: 4px 16px; border-radius: 10px; font-family: system-ui, sans-serif;
+    font-size: 24px; font-weight: 700; color: var(--sea-deep); background: rgba(42,157,244,.15); }
+  .talk { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
+  .avatar { width: 72px; height: 72px; flex-shrink: 0; background: #bfe9ff; border-radius: 50%; object-fit: cover;
+    border: 3px solid var(--btn); box-shadow: 0 0 12px rgba(108,198,255,.8); }
+  .bubble { position: relative; background: #fff; padding: 10px 16px; border-radius: 16px; border: 2px solid var(--btn-light); font-size: 20px; }
+  .bubble::before { content: ''; position: absolute; left: -10px; top: 50%; margin-top: -8px;
+    border: 8px solid transparent; border-right-color: var(--btn-light); border-left: 0; }
+  .side { position: fixed; top: 0; bottom: 0; width: 180px; overflow: hidden; z-index: 0;
+    mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent); -webkit-mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent); }
+  .side.left { left: 18px; } .side.right { right: 18px; }
+  .side-track { display: flex; flex-direction: column; gap: 18px; animation: drift 60s linear infinite; }
+  .side.right .side-track { animation-direction: reverse; }
+  @keyframes drift { to { transform: translateY(-50%); } }
+  .hero-card { position: relative; width: 100%; aspect-ratio: 3 / 5; border-radius: 16px; overflow: hidden;
+    border: 3px solid var(--btn-light); box-shadow: 0 0 18px rgba(108,198,255,.55); }
+  .hero-card { background: linear-gradient(180deg, #e3f6ff, #8fd0f5 55%, #2a9df4); }
+  .hero-card img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  .hero-card span { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px; text-align: center; font-weight: 700; font-size: 14px;
+    color: #fff; background: linear-gradient(transparent, rgba(6,36,63,.9)); letter-spacing: 1px; }
+  @media (max-width: 1050px) { .side { display: none; } }
+  .good { color: var(--good); }
+  .bad { color: var(--bad); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { color: var(--bronze); border-bottom: 2px solid var(--btn); }
+  th, td { padding: 8px 6px; text-align: left; }
+  tr:nth-child(even) td { background: rgba(42,157,244,.08); }
+  #micStatus { text-align: center; color: var(--sea); font-size: 14px; min-height: 18px; }
+
+  .made-by { position: fixed; left: 14px; bottom: 12px; z-index: 6; display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px 6px 6px; border-radius: 999px; background: rgba(6,36,63,.85); color: #e8f6ff; text-decoration: none;
+    font-size: 13px; box-shadow: 0 2px 10px rgba(0,0,0,.35); }
+  .made-by img { width: 34px; height: 34px; border-radius: 50%; }
+  .made-by small { display: block; font-family: system-ui, sans-serif; font-size: 10px; opacity: .75; letter-spacing: 0; }
+  .spark { position: fixed; z-index: 5; pointer-events: none; font-size: 26px; animation: fly 1.2s ease-out forwards; }
+  @keyframes fly { to { transform: translate(var(--dx), var(--dy)) rotate(360deg); opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="waves"></div>
+<a class="made-by" href="https://learnimla.com" target="_blank" rel="noopener">
+  <img src="brand/learnimla.png" alt="Learnimla">
+  <span>Made by Learnimla<small>Fan-made · not affiliated with Rick Riordan or Disney</small></span>
+</a>
+<div class="side left"><div class="side-track" id="leftTrack"></div></div>
+<div class="side right"><div class="side-track" id="rightTrack"></div></div>
+
+<div class="title">
+  <div class="trident">🔱</div>
+  <h1>Spelling Quest</h1>
+  <div class="sub">⚡ TRAINING AT CAMP HALF-BLOOD ⚡</div>
+</div>
+
+<div class="card">
+  <div class="hud">
+    <span class="pill" id="progress"></span>
+    <span class="pill">🏆 Grade <span id="grade">–</span></span>
+    <span class="pill">🪙 <span id="drachmas">0</span></span>
+  </div>
+  <div class="bar"><div class="bar-fill" id="barFill"></div><span class="bar-text" id="barText"></span></div>
+
+  <div class="row">
+    <button id="sayBtn" class="big">🐚 Hear the word</button>
+    <button id="repeatBtn" class="secondary">🔁 Again, slowly</button>
+  </div>
+
+  <input id="answer" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type or say the letters">
+  <div class="row">
+    <button id="micBtn" class="mic secondary">🎤 Say letters</button>
+    <button id="clearBtn" class="secondary">🌊 Wash away</button>
+    <button id="checkBtn" class="big">⚡ Approve</button>
+  </div>
+  <div id="micStatus"></div>
+  <div id="result"></div>
+  <div class="row"><button id="nextBtn" class="big" style="display:none">Next quest ➡</button></div>
+  <div class="row"><button id="restartBtn" class="secondary">🔄 Restart quest</button></div>
+</div>
+
+<div class="card">
+  <h2>📜 Scroll of Heroes</h2>
+  <table>
+    <thead><tr><th>Word</th><th>⚡ Right</th><th>💀 Wrong</th><th>Last answer</th></tr></thead>
+    <tbody id="stats"></tbody>
+  </table>
+  <div class="row"><button id="resetBtn" class="secondary">Burn the scroll</button></div>
+</div>
+
+<script src="words/list1.js"></script>
+<script>
+const WORDS = WORD_LIST.split('\n')
+  .map(line => line.trim().match(/^(.*?)\s*([A-Za-z][A-Za-z' ]*)$/))
+  .filter(Boolean)
+  .map(([, he, en]) => [en.trim().toLowerCase(), he.trim()]);
+const HEBREW = Object.fromEntries(WORDS);
+const ENGLISH = WORDS.map(([en]) => en);
+
+const STORAGE_KEY = 'spelling-results';
+const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+let order = shuffle([...ENGLISH]);
+let index = 0;
+let checked = false;
+let roundRight = 0;
+let roundWrong = 0;
+
+const $ = id => document.getElementById(id);
+const squash = w => w.replace(/\s+/g, '');
+const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const answer = $('answer');
+
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function currentWord() { return order[index]; }
+
+function speak(text, rate = 0.8) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = rate;
+  speechSynthesis.speak(u);
+}
+
+function showWord() {
+  checked = false;
+  answer.value = '';
+  answer.disabled = false;
+  $('result').innerHTML = '';
+  $('nextBtn').style.display = 'none';
+  $('checkBtn').disabled = false;
+  $('progress').textContent = `🏛 Quest ${index + 1} / ${order.length}`;
+  renderRound();
+  answer.focus();
+}
+
+function renderRound() {
+  const answered = roundRight + roundWrong;
+  $('barFill').style.width = (answered / order.length * 100) + '%';
+  $('barText').textContent = `${answered} / ${order.length} answered · ✅ ${roundRight} · ❌ ${roundWrong}`;
+  $('grade').textContent = answered ? Math.floor(roundRight / answered * 100) + '%' : '–';
+}
+
+function check() {
+  if (checked) return;
+  const typed = squash(answer.value.toLowerCase());
+  if (!typed) return;
+  stopMic();
+  checked = true;
+  const word = currentWord();
+  const ok = typed === squash(word);
+
+  const r = results[word] || { right: 0, wrong: 0, last: '' };
+  ok ? r.right++ : r.wrong++;
+  ok ? roundRight++ : roundWrong++;
+  r.last = typed;
+  results[word] = r;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+
+  const res = $('result');
+  res.className = '';
+  void res.offsetWidth;
+  res.className = ok ? 'pop' : 'shake';
+  res.innerHTML = `<div class="talk"><img class="avatar" src="heroes/${pick(HEROES)}-face.png" alt="" onerror="this.remove()">
+      <div class="bubble big ${ok ? 'good' : 'bad'}">${ok ? '⚡ ' + pick(PRAISE) : '🌊 ' + pick(TRY_AGAIN)}</div></div>`;
+  res.innerHTML += ok
+    ? `<div>${word}</div>`
+    : `<div>You wrote: <b>${esc(typed)}</b></div><div>Right spelling: <b class="good">${word}</b></div>`;
+  res.innerHTML += `<div class="hebrew" dir="rtl">${HEBREW[word]}</div>`;
+  speak(ok ? 'Correct!' : `The right spelling is ${squash(word).split('').join(', ')}`, 0.9);
+  if (ok) sparkles();
+
+  answer.disabled = true;
+  $('checkBtn').disabled = true;
+  const last = index === order.length - 1;
+  if (last) {
+    const grade = Math.floor(roundRight / order.length * 100);
+    res.innerHTML += `<div class="big" style="margin-top:14px">🏁 Quest complete! Final grade: ${grade}%</div>`;
+  }
+  $('nextBtn').textContent = last ? 'Start a new quest 🔱' : 'Next quest ➡';
+  $('nextBtn').style.display = '';
+  renderRound();
+  renderStats();
+}
+
+function next() {
+  index++;
+  if (index >= order.length) {
+    order = shuffle([...ENGLISH]);
+    index = 0;
+    roundRight = roundWrong = 0;
+  }
+  showWord();
+  speak(currentWord());
+}
+
+const PRAISE = ['The gods smile on you!', 'Worthy of Olympus!', 'Poseidon is proud!', 'A true demigod!', 'Heroic spelling!'];
+const TRY_AGAIN = ['Even heroes stumble!', 'The Fates say: try again!', 'Not this time, hero!'];
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+const LEFT_HEROES = ['percy', 'annabeth', 'leo', 'hazel', 'piper'];
+const RIGHT_HEROES = ['reyna', 'frank', 'will', 'nico', 'jason'];
+const HEROES = [...LEFT_HEROES, ...RIGHT_HEROES];
+const heroPic = n => `heroes/${n}.png`;
+
+function fillSide(trackId, names) {
+  const cards = names.map(n => `<div class="hero-card"><img src="${heroPic(n)}" alt=""><span>${n.toUpperCase()}</span></div>`).join('');
+  $(trackId).innerHTML = cards + cards;
+}
+fillSide('leftTrack', LEFT_HEROES);
+fillSide('rightTrack', RIGHT_HEROES);
+
+function sparkles() {
+  const box = $('checkBtn').getBoundingClientRect();
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    s.textContent = pick(['⚡', '🔱', '🪙', '✨', '🌊']);
+    s.style.left = box.left + box.width / 2 + 'px';
+    s.style.top = box.top + 'px';
+    s.style.setProperty('--dx', (Math.random() * 300 - 150) + 'px');
+    s.style.setProperty('--dy', (Math.random() * -250 - 50) + 'px');
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1300);
+  }
+}
+
+function renderStats() {
+  $('drachmas').textContent = Object.values(results).reduce((sum, r) => sum + r.right, 0);
+  const words = Object.keys(results).sort((a, b) => results[b].wrong - results[a].wrong);
+  $('stats').innerHTML = words.map(w => {
+    const r = results[w];
+    const lastOk = r.last === squash(w);
+    return `<tr><td>${w}</td><td>${r.right}</td><td>${r.wrong}</td>
+            <td class="${lastOk ? 'good' : 'bad'}">${esc(r.last)}</td></tr>`;
+  }).join('') || '<tr><td colspan="4">No quests completed yet, hero</td></tr>';
+}
+
+// --- Speech recognition: the child says letters one by one ---
+const LETTER_NAMES = {
+  a: 'a', ay: 'a', eh: 'a',
+  b: 'b', be: 'b', bee: 'b',
+  c: 'c', see: 'c', sea: 'c', si: 'c',
+  d: 'd', dee: 'd', de: 'd',
+  e: 'e',
+  f: 'f', ef: 'f', eff: 'f',
+  g: 'g', gee: 'g', ji: 'g',
+  h: 'h', aitch: 'h', age: 'h', each: 'h',
+  i: 'i', eye: 'i', aye: 'i',
+  j: 'j', jay: 'j',
+  k: 'k', kay: 'k', okay: 'k', ok: 'k',
+  l: 'l', el: 'l', elle: 'l', ell: 'l',
+  m: 'm', em: 'm',
+  n: 'n', en: 'n', and: 'n',
+  o: 'o', oh: 'o', owe: 'o',
+  p: 'p', pee: 'p', pea: 'p',
+  q: 'q', queue: 'q', cue: 'q', cute: 'q',
+  r: 'r', are: 'r', our: 'r', ar: 'r',
+  s: 's', ess: 's', es: 's', yes: 's',
+  t: 't', tea: 't', tee: 't',
+  u: 'u', you: 'u',
+  v: 'v', vee: 'v', we: 'v',
+  w: 'w', 'double-u': 'w',
+  x: 'x', ex: 'x', eggs: 'x',
+  y: 'y', why: 'y',
+  z: 'z', zee: 'z', zed: 'z'
+};
+
+function wordsToLetters(text) {
+  let out = '';
+  for (const t of text.toLowerCase().replace(/double\s+(u|you)/g, ' double-u ').split(/[\s,.]+/)) {
+    if (!t) continue;
+    if (LETTER_NAMES[t]) out += LETTER_NAMES[t];
+    else if (/^[a-z]+$/.test(t) && t.length <= 2) out += t;
+  }
+  return out;
+}
+
+const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognizer = null;
+let listening = false;
+
+if (Recognition) {
+  recognizer = new Recognition();
+  recognizer.lang = 'en-US';
+  recognizer.continuous = true;
+  recognizer.interimResults = false;
+  recognizer.onresult = e => {
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        answer.value += wordsToLetters(e.results[i][0].transcript);
+      }
+    }
+  };
+  recognizer.onend = () => { if (listening) recognizer.start(); };
+  recognizer.onerror = e => { $('micStatus').textContent = 'Mic error: ' + e.error; };
+} else {
+  $('micBtn').disabled = true;
+  $('micStatus').textContent = 'Voice letters need Chrome or Edge — you can still type.';
+}
+
+function startMic() {
+  if (!recognizer || checked) return;
+  listening = true;
+  recognizer.start();
+  $('micBtn').classList.add('on');
+  $('micBtn').textContent = '⏹ Stop';
+  $('micStatus').textContent = 'Listening… say the letters one by one';
+}
+
+function stopMic() {
+  if (!listening) return;
+  listening = false;
+  recognizer.stop();
+  $('micBtn').classList.remove('on');
+  $('micBtn').textContent = '🎤 Say letters';
+  $('micStatus').textContent = '';
+}
+
+$('sayBtn').onclick = () => speak(currentWord());
+$('repeatBtn').onclick = () => speak(currentWord(), 0.6);
+$('micBtn').onclick = () => listening ? stopMic() : startMic();
+$('clearBtn').onclick = () => { if (!checked) { answer.value = ''; answer.focus(); } };
+$('checkBtn').onclick = check;
+$('nextBtn').onclick = next;
+$('resetBtn').onclick = () => {
+  if (!confirm('Burn the scroll and delete all results?')) return;
+  for (const k in results) delete results[k];
+  localStorage.removeItem(STORAGE_KEY);
+  restartQuest();
+};
+
+function restartQuest() {
+  stopMic();
+  order = shuffle([...ENGLISH]);
+  index = 0;
+  roundRight = roundWrong = 0;
+  showWord();
+  renderStats();
+}
+$('restartBtn').onclick = () => {
+  if (confirm('Start the quest again from word 1?')) restartQuest();
+};
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.target.tagName === 'BUTTON') return;
+  checked ? next() : check();
+});
+
+showWord();
+renderStats();
+</script>
+</body>
+</html>
