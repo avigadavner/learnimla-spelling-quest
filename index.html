@@ -81,6 +81,8 @@
   @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
   .hebrew { display: inline-block; margin-top: 8px; padding: 4px 16px; border-radius: 10px; font-family: system-ui, sans-serif;
     font-size: 24px; font-weight: 700; color: var(--sea-deep); background: rgba(42,157,244,.15); }
+  .hebrew-prompt { text-align: center; }
+  .hebrew-prompt .hebrew { margin-top: 0; font-size: 30px; }
   .talk { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
   .avatar { width: 72px; height: 72px; flex-shrink: 0; background: #bfe9ff; border-radius: 50%; object-fit: cover;
     border: 3px solid var(--btn); box-shadow: 0 0 12px rgba(108,198,255,.8); }
@@ -142,6 +144,7 @@
   </div>
   <div class="bar"><div class="bar-fill" id="barFill"></div><span class="bar-text" id="barText"></span></div>
 
+  <div class="hebrew-prompt"><div class="hebrew" dir="rtl" id="hebrewWord"></div></div>
   <div class="row">
     <button id="sayBtn" class="big">🐚 Hear the word</button>
     <button id="repeatBtn" class="secondary">🔁 Again, slowly</button>
@@ -201,10 +204,25 @@ function shuffle(a) {
 
 function currentWord() { return order[index]; }
 
+const VOICE_PREFERENCE = [/natural/i, /google us english/i, /premium/i, /enhanced/i, /samantha/i, /aria|jenny|guy/i, /google/i];
+let voice = null;
+
+function pickVoice() {
+  const english = speechSynthesis.getVoices().filter(v => /^en[-_]US/i.test(v.lang));
+  const rank = v => {
+    const i = VOICE_PREFERENCE.findIndex(re => re.test(v.name));
+    return i === -1 ? VOICE_PREFERENCE.length : i;
+  };
+  voice = english.sort((a, b) => rank(a) - rank(b))[0] || null;
+}
+pickVoice();
+speechSynthesis.onvoiceschanged = pickVoice;
+
 function speak(text, rate = 0.8) {
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'en-US';
+  if (voice) u.voice = voice;
   u.rate = rate;
   speechSynthesis.speak(u);
 }
@@ -216,6 +234,7 @@ function showWord() {
   $('result').innerHTML = '';
   $('nextBtn').style.display = 'none';
   $('checkBtn').disabled = false;
+  $('hebrewWord').textContent = HEBREW[currentWord()];
   $('progress').textContent = `🏛 Quest ${index + 1} / ${order.length}`;
   renderRound();
   answer.focus();
@@ -253,7 +272,6 @@ function check() {
   res.innerHTML += ok
     ? `<div>${word}</div>`
     : `<div>You wrote: <b>${esc(typed)}</b></div><div>Right spelling: <b class="good">${word}</b></div>`;
-  res.innerHTML += `<div class="hebrew" dir="rtl">${HEBREW[word]}</div>`;
   speak(ok ? 'Correct!' : `The right spelling is ${squash(word).split('').join(', ')}`, 0.9);
   if (ok) sparkles();
 
