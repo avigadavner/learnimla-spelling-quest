@@ -171,10 +171,10 @@
   <div class="row"><button id="resetBtn" class="secondary">Burn the scroll</button></div>
 </div>
 
-<script src="words/list1.js"></script>
+<script src="words/list2.js"></script>
 <script>
 const WORDS = WORD_LIST.split('\n')
-  .map(line => line.trim().match(/^(.*?)\s*([A-Za-z][A-Za-z' ]*)$/))
+  .map(line => line.trim().match(/^(.*?)\s*([A-Za-z][A-Za-z'() ]*)$/))
   .filter(Boolean)
   .map(([, he, en]) => [en.trim().toLowerCase(), he.trim()]);
 const HEBREW = Object.fromEntries(WORDS);
@@ -190,7 +190,7 @@ let roundRight = 0;
 let roundWrong = 0;
 
 const $ = id => document.getElementById(id);
-const squash = w => w.replace(/\s+/g, '');
+const squash = w => w.replace(/[\s()]+/g, '');
 const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const answer = $('answer');
 
